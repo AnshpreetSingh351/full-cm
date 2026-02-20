@@ -320,17 +320,26 @@
 
     <div class="Front">
 <div class="image-wrapper video-stack">
+  <!-- Intro video (plays once) -->
   <video id="introVideo"
-         src="video/video.mp4#t=0.001"
-         muted playsinline autoplay
+         src="video/video.mp4"
+         muted
+         playsinline
+         webkit-playsinline
+         preload="auto"
+         autoplay
          poster="images/Thumbnail/Home_Low.webp">
   </video>
 
+  <!-- Loop video (hidden at first) -->
   <video id="loopVideo"
-         src="video/loop.mp4#t=0.001"
-         muted playsinline loop
-         poster="images/Thumbnail/Home_Low.webp"
-         style="display: none;">
+         src="video/loop.mp4"
+         muted
+         playsinline
+         webkit-playsinline
+         preload="auto"
+         loop
+         poster="images/Thumbnail/Home_Low.webp">
   </video>
 </div>  <div class="Cutout">
                 <!-- <svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 3840 5830">
@@ -473,20 +482,39 @@
             });
         });
     </script>
-<div class="image-wrapper video-stack">
-  <video id="introVideo"
-         src="video/video.mp4#t=0.001"
-         muted playsinline autoplay
-         poster="images/Thumbnail/Home_Low.webp">
-  </video>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const intro = document.getElementById("introVideo");
+    const loop  = document.getElementById("loopVideo");
 
-  <video id="loopVideo"
-         src="video/loop.mp4#t=0.001"
-         muted playsinline loop
-         poster="images/Thumbnail/Home_Low.webp"
-         style="display: none;">
-  </video>
-</div>
+    // Force load on iOS
+    intro.load();
+    loop.load();
+
+    // Try to start intro
+    intro.play().catch(() => {
+      // If autoplay is blocked, wait for user interaction
+      const resume = () => {
+        intro.play().catch(()=>{});
+        document.removeEventListener("touchstart", resume);
+      };
+      document.addEventListener("touchstart", resume, { once: true });
+    });
+
+    intro.addEventListener("ended", () => {
+      intro.style.display = "none";
+      loop.style.display = "block";
+
+      loop.play().catch(() => {
+        const resume = () => {
+          loop.play().catch(()=>{});
+          document.removeEventListener("touchstart", resume);
+        };
+        document.addEventListener("touchstart", resume, { once: true });
+      });
+    });
+  });
+</script>
     <script>
         (function () {
             const img = document.querySelector('.image-wrapper img');
