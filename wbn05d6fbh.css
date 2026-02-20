@@ -2,6 +2,24 @@ body {
     margin: 0;
     overflow: hidden;
     user-select: none;
+}.video-stack {
+  position: relative;
+  width: 100%;
+  height: 100vh;   /* or your desired height */
+  overflow: hidden;
+}
+
+.video-stack video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+#loopVideo {
+  display: none;
 }
 
 /* ABOUT – MINIMAL NAV STYLE */
