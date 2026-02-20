@@ -320,26 +320,17 @@
 
     <div class="Front">
 <div class="image-wrapper video-stack">
-  <!-- Intro video (plays once) -->
   <video id="introVideo"
-         src="video/video.mp4"
-         muted
-         playsinline
-         webkit-playsinline
-         preload="auto"
-         autoplay
+         src="video/video.mp4#t=0.001"
+         muted playsinline autoplay
          poster="images/Thumbnail/Home_Low.webp">
   </video>
 
-  <!-- Loop video (hidden at first) -->
   <video id="loopVideo"
-         src="video/loop.mp4"
-         muted
-         playsinline
-         webkit-playsinline
-         preload="auto"
-         loop
-         poster="images/Thumbnail/Home_Low.webp">
+         src="video/loop.mp4#t=0.001"
+         muted playsinline loop
+         poster="images/Thumbnail/Home_Low.webp"
+         style="display: none;">
   </video>
 </div>  <div class="Cutout">
                 <!-- <svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 3840 5830">
@@ -482,49 +473,20 @@
             });
         });
     </script>
-     <script>
-document.addEventListener("DOMContentLoaded", () => {
-    const intro = document.getElementById("introVideo");
-    const loop  = document.getElementById("loopVideo");
+<div class="image-wrapper video-stack">
+  <video id="introVideo"
+         src="video/video.mp4#t=0.001"
+         muted playsinline autoplay
+         poster="images/Thumbnail/Home_Low.webp">
+  </video>
 
-    // iOS Fix: Ensure videos are "primed"
-    intro.load();
-    loop.load();
-
-    // 1. Handle Intro Video
-    intro.play().catch(() => {
-        // Fallback for strict autoplay blocks
-        const forcePlay = () => {
-            intro.play();
-            document.removeEventListener("touchstart", forcePlay);
-        };
-        document.addEventListener("touchstart", forcePlay, { once: true });
-    });
-
-    // 2. Handle the transition to Loop
-    intro.addEventListener("ended", () => {
-        // Show the loop video first
-        loop.style.display = "block";
-        intro.style.display = "none";
-
-        // iOS Fix: Explicitly set loop and play
-        loop.loop = true; 
-        
-        const playPromise = loop.play();
-        
-        if (playPromise !== undefined) {
-            playPromise.catch(error => {
-                // If it fails (e.g. Low Power Mode), play on next touch
-                const resumeLoop = () => {
-                    loop.play();
-                    document.removeEventListener("touchstart", resumeLoop);
-                };
-                document.addEventListener("touchstart", resumeLoop, { once: true });
-            });
-        }
-    });
-});
-     </script>
+  <video id="loopVideo"
+         src="video/loop.mp4#t=0.001"
+         muted playsinline loop
+         poster="images/Thumbnail/Home_Low.webp"
+         style="display: none;">
+  </video>
+</div>
     <script>
         (function () {
             const img = document.querySelector('.image-wrapper img');
