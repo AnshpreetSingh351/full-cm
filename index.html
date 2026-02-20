@@ -319,20 +319,27 @@
 
 
     <div class="Front">
-  <div class="image-wrapper">
-  <!-- Preload both videos -->
-  <link rel="preload" as="video" href="video/video.mp4" type="video/mp4">
-  <link rel="preload" as="video" href="video/loop.mp4" type="video/mp4">
-
-  <video id="heroVideo"
+ <div class="image-wrapper">
+  <!-- Intro video (plays once) -->
+  <video id="introVideo"
+         src="video/video.mp4"
          muted
          playsinline
          preload="auto"
          autoplay
          style="width:100%; height:100%; object-fit:cover; display:block;">
   </video>
-</div>>
-            <div class="Cutout">
+
+  <!-- Loop video (hidden at first) -->
+  <video id="loopVideo"
+         src="video/loop.mp4"
+         muted
+         playsinline
+         preload="auto"
+         loop
+         style="width:100%; height:100%; object-fit:cover; display:none;">
+  </video>
+</div>     <div class="Cutout">
                 <!-- <svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 3840 5830">
                     <path id="Tower_A" data-link="Tower_A.html" data-name="Tower_A"
                         data-img="images/Thumbnail/Tower_A.jpg"
@@ -476,28 +483,21 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-    const heroVideo = document.getElementById("heroVideo");
+    const intro = document.getElementById("introVideo");
+    const loop  = document.getElementById("loopVideo");
 
-    // ✅ Use the SAME paths that actually exist
-    const introVideo = "video/video.mp4"; // first video (plays once)
-    const loopVideo  = "video/loop.mp4";  // second video (loops forever)
+    // When intro ends, hide it and start loop video
+    intro.addEventListener("ended", () => {
+      intro.style.display = "none";
+      loop.style.display = "block";
 
-    // Start with intro
-    heroVideo.src = introVideo;
-    heroVideo.loop = false;
-
-    heroVideo.play().catch(err => {
-      console.warn("Autoplay blocked or failed:", err);
-    });
-
-    heroVideo.addEventListener("ended", () => {
-      heroVideo.src = loopVideo;
-      heroVideo.loop = true;
-      heroVideo.play();
+      // Some mobiles need an explicit play call
+      loop.play().catch(err => {
+        console.warn("Loop autoplay blocked:", err);
+      });
     });
   });
 </script>
-
     <script>
         (function () {
             const img = document.querySelector('.image-wrapper img');
