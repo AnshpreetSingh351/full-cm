@@ -482,39 +482,47 @@
             });
         });
     </script>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
     const intro = document.getElementById("introVideo");
     const loop  = document.getElementById("loopVideo");
 
-    // Force load on iOS
+    // iOS Fix: Ensure videos are "primed"
     intro.load();
     loop.load();
 
-    // Try to start intro
+    // 1. Handle Intro Video
     intro.play().catch(() => {
-      // If autoplay is blocked, wait for user interaction
-      const resume = () => {
-        intro.play().catch(()=>{});
-        document.removeEventListener("touchstart", resume);
-      };
-      document.addEventListener("touchstart", resume, { once: true });
-    });
-
-    intro.addEventListener("ended", () => {
-      intro.style.display = "none";
-      loop.style.display = "block";
-
-      loop.play().catch(() => {
-        const resume = () => {
-          loop.play().catch(()=>{});
-          document.removeEventListener("touchstart", resume);
+        // Fallback for strict autoplay blocks
+        const forcePlay = () => {
+            intro.play();
+            document.removeEventListener("touchstart", forcePlay);
         };
-        document.addEventListener("touchstart", resume, { once: true });
-      });
+        document.addEventListener("touchstart", forcePlay, { once: true });
     });
-  });
-</script>
+
+    // 2. Handle the transition to Loop
+    intro.addEventListener("ended", () => {
+        // Show the loop video first
+        loop.style.display = "block";
+        intro.style.display = "none";
+
+        // iOS Fix: Explicitly set loop and play
+        loop.loop = true; 
+        
+        const playPromise = loop.play();
+        
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                // If it fails (e.g. Low Power Mode), play on next touch
+                const resumeLoop = () => {
+                    loop.play();
+                    document.removeEventListener("touchstart", resumeLoop);
+                };
+                document.addEventListener("touchstart", resumeLoop, { once: true });
+            });
+        }
+    });
+});
     <script>
         (function () {
             const img = document.querySelector('.image-wrapper img');
